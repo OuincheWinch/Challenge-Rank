@@ -6,7 +6,7 @@ It's tough. You have to scroll... and scroll... and scroll. And if you refresh? 
 
 **Challenge Rank** fixes this. It's a simple, non-destructive Chrome Extension that works in the background to build a live "Top 20" leaderboard as you browse.
 
-![Top 20 Overlay](/Users/admin/.gemini/antigravity/brain/4e20957f-ca5a-4e4a-acdd-78cc0c245045/overlay_open_populated_1771434876990.png)
+![Top 20 Overlay](images/overlay.png)
 
 ## 🌟 How It Works
 
@@ -37,10 +37,10 @@ Since this is a custom tool, you'll load it as an "Unpacked Extension" in Chrome
 ## 📸 Screenshots
 
 **The Persistent Overlay:**
-![Overlay](/Users/admin/.gemini/antigravity/brain/4e20957f-ca5a-4e4a-acdd-78cc0c245045/overlay_open_populated_1771434876990.png)
+![Overlay](images/overlay.png)
 
 **The Floating Button:**
-![Button](/Users/admin/.gemini/antigravity/brain/4e20957f-ca5a-4e4a-acdd-78cc0c245045/floating_button_only_1771434907421.png)
+![Button](images/button.png)
 
 ---
 *Created to make life easier for Civitai challengers!*
