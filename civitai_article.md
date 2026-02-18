@@ -6,14 +6,15 @@ It's tough. You have to scroll... and scroll... and scroll. And if you refresh? 
 
 **Challenge Rank** fixes this. It's a simple, non-destructive Chrome Extension that works in the background to build a live "Top 20" leaderboard as you browse.
 
-![Top 20 Overlay](/Users/admin/.gemini/antigravity/brain/4e20957f-ca5a-4e4a-acdd-78cc0c245045/overlay_open_populated_1771434876990.png)
+![](Overlay.png)
 
 ## 🌟 How It Works
 
 1.  **Install the Extension**: (See below).
 2.  **Go to a Challenge**: Navigate to any challenge page (e.g., `civitai.com/challenges/...`).
-3.  **Browse Normally**: Just scroll down the page. The extension quietly scans every image card it sees.
-4.  **Click the Trophy 🏆**: A floating trophy button appears in the bottom right. Click it to see the **Top 20 Highest Rated** images found so far.
+3.  **Activate Judge Reviewed filter** ![](Filters.png) 
+4.  **Browse Normally**: Just scroll down the page. The extension quietly scans every image card it sees.
+5.  **Click the Trophy 🏆**: A floating trophy button appears in the bottom right. Click it to see the **Top 20 Highest Rated** images found so far.
 
 ## ✨ Key Features
 
