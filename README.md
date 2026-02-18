@@ -34,8 +34,11 @@ A Chrome extension that enhances [Civitai Challenges](https://civitai.com/challe
 -   `manifest.json`: Extension configuration.
 -   `content.js`: Main logic for scanning, scoring, and UI.
 -   `content.css`: Styling for the overlay and button.
--   `icon.png`: The extension icon.
 
-## Troubleshooting
--   **No scores appearing?** Ensure the "Judge Reviewed" filter is active on the Civitai page.
--   **Extension not showing?** Make sure you are on a URL containing `/challenges/`.
+---
+
+## ⚖️ Disclaimer
+
+This is an **unofficial**, community-created extension and is **not** affiliated with, endorsed by, or connected to Civitai in any way.
+
+**Civitai™** is a trademark of its respective owners. This tool is provided "as is" without warranty of any kind, intended solely to enhance the user experience on the Civitai platform.

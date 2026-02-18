@@ -39,8 +39,11 @@ Since this is a custom tool, you'll load it as an "Unpacked Extension" in Chrome
 **The Persistent Overlay:**
 ![Overlay](images/overlay.png)
 
-**The Floating Button:**
-![Button](images/button.png)
 
 ---
-*Created to make life easier for Civitai challengers!*
+
+## ⚖️ Disclaimer
+
+This is an **unofficial**, community-created extension and is **not** affiliated with, endorsed by, or connected to Civitai in any way.
+
+**Civitai™** is a trademark of its respective owners. This tool is provided "as is" without warranty of any kind.
