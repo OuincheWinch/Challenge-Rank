@@ -34,13 +34,13 @@ Since this is a custom tool, you'll load it as an "Unpacked Extension" in Chrome
 5.  Select the `challenge-rank-extension` folder.
 6.  That's it! Go to a Civitai Challenge page and look for the 🏆.
 
-## 📸 Screenshots
+ 
+ ---
+## ⚖️ Disclaimer
 
-**The Persistent Overlay:**
-![Overlay](/Users/admin/.gemini/antigravity/brain/4e20957f-ca5a-4e4a-acdd-78cc0c245045/overlay_open_populated_1771434876990.png)
+This is an **unofficial**, community-created extension and is **not** affiliated with, endorsed by, or connected to Civitai in any way.
 
-**The Floating Button:**
-![Button](/Users/admin/.gemini/antigravity/brain/4e20957f-ca5a-4e4a-acdd-78cc0c245045/floating_button_only_1771434907421.png)
+**Civitai™** is a trademark of its respective owners. This tool is provided "as is" without warranty of any kind.
 
 ---
 *Created to make life easier for Civitai challengers!*
