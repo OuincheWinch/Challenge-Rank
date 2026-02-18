@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Challenge Rank",
+  "version": "1.0",
+  "description": "Sort Civitai challenge images by rank/score.",
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://civitai.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_end"
+    }
+  ]
+}
