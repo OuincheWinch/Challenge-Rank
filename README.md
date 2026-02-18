@@ -1,8 +1,8 @@
 # Challenge Rank 🏆
 
-A Chrome extension that enhances [Civitai Challenges](https://civitai.com/challenges) by automatically finding and ranking images based on their vote score. It provides a non-destructive "Top 20" overlay to verify the current leaders without altering the page layout.
+A Chrome extension that enhances [Civitai Challenges](https://civitai.com/challenges) by automatically finding and ranking images based on their CivBot score. It provides a non-destructive "Top 20" overlay to verify the current leaders without altering the page layout.
 
-![Top 20 Overlay](/Users/admin/.gemini/antigravity/brain/4e20957f-ca5a-4e4a-acdd-78cc0c245045/overlay_open_populated_1771434876990.png)
+![Top 20 Overlay](/Overlay.png)
 
 ## Features
 
@@ -28,7 +28,7 @@ A Chrome extension that enhances [Civitai Challenges](https://civitai.com/challe
 3.  Click the **Floating 🏆 Button** to open the Top 20 Overlay.
 4.  **Click & Drag** the button to move it out of your way.
 
-![Floating Button](/Users/admin/.gemini/antigravity/brain/4e20957f-ca5a-4e4a-acdd-78cc0c245045/floating_button_only_1771434907421.png)
+![Floating Button](Flying_button.png)
 
 ## Files
 -   `manifest.json`: Extension configuration.
