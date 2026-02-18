@@ -1,3 +1,9 @@
+## ⚖️ Disclaimer
+
+This is an **unofficial**, community-created extension and is **not** affiliated with, endorsed by, or connected to Civitai in any way.
+
+**Civitai™** is a trademark of its respective owners. This tool is provided "as is" without warranty of any kind.   
+
 # Challenge Rank 🏆
 
 A Chrome extension that enhances [Civitai Challenges](https://civitai.com/challenges) by automatically finding and ranking images based on their CivBot score. It provides a non-destructive "Top 20" overlay to verify the current leaders without altering the page layout.
@@ -24,9 +30,11 @@ A Chrome extension that enhances [Civitai Challenges](https://civitai.com/challe
 ## Usage
 
 1.  Go to any **Civitai Challenge** page (e.g., `https://civitai.com/challenges/...`).
-2.  Scroll down to load images. The extension works in the background to find scores.
-3.  Click the **Floating 🏆 Button** to open the Top 20 Overlay.
-4.  **Click & Drag** the button to move it out of your way.
+2.  Activate the Judge Review filer ![Filters.png](Filters.png)
+  
+4.  Scroll down to load images. The extension works in the background to find scores.
+5.  Click the **Floating 🏆 Button** to open the Top 20 Overlay.
+6.  **Click & Drag** the button to move it out of your way.
 
 ![Floating Button](Flying_button.png)
 
