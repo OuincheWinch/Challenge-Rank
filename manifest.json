@@ -1,12 +1,23 @@
 {
   "manifest_version": 3,
   "name": "Challenge Rank",
-  "version": "1.0",
-  "description": "Sort Civitai challenge images by rank/score.",
+  "version": "1.0.1",
+  "description": "Sort Civitai challenge images by rank/score with judge details popup.",
   "icons": {
     "16": "icon.png",
     "48": "icon.png",
     "128": "icon.png"
+  },
+  "permissions": [
+    "cookies",
+    "scripting",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://civitai.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
