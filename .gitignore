@@ -1,0 +1,8 @@
+*.zip
+*.png
+.DS_Store
+Challenge-Rank-v2.0.0/
+push_to_github.sh
+!icon.png
+!images/*.png
+!Flying_button.png
