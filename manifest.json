@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Challenge Rank",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Sort Civitai challenge images by rank/score with judge details popup.",
   "icons": {
     "16": "icon.png",
@@ -14,7 +14,8 @@
     "activeTab"
   ],
   "host_permissions": [
-    "https://civitai.com/*"
+    "https://civitai.com/*",
+    "https://www.ouinche.com/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -25,7 +26,10 @@
         "https://civitai.com/*"
       ],
       "js": [
-        "content.js"
+        "scanner.js",
+        "popup.js",
+        "overlay.js",
+        "controls.js"
       ],
       "css": [
         "content.css"

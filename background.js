@@ -7,6 +7,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             .catch(err => sendResponse({ success: false, error: err.message }));
         return true;
     }
+    if (request.action === 'fetchChallengeMetadata') {
+        fetchChallengeMetadata(request.challengeId)
+            .then(data => sendResponse({ success: true, data }))
+            .catch(err => sendResponse({ success: false, error: err.message }));
+        return true;
+    }
+    if (request.action === 'fetchCooldownData') {
+        fetchCooldownData()
+            .then(data => sendResponse({ success: true, data }))
+            .catch(err => sendResponse({ success: false, error: err.message }));
+        return true;
+    }
     if (request.action === 'extractReactData') {
         extractReactData(sender.tab.id, request.imageId)
             .then(data => sendResponse({ success: true, data }))
@@ -34,6 +46,45 @@ async function fetchJudgeData(challengeId) {
         if (!cursor || result.items.length < 100) break;
     }
     return allItems;
+}
+
+async function fetchChallengeMetadata(challengeId) {
+    const input = { json: { id: parseInt(challengeId) } };
+    const url = `https://civitai.com/api/trpc/challenge.getById?input=${encodeURIComponent(JSON.stringify(input))}`;
+    const res = await fetch(url, { credentials: 'include' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    const data = json?.result?.data?.json;
+    if (!data) throw new Error('No challenge data found');
+    return {
+        status: data.status || 'Unknown',
+        winners: (data.winners || []).map(w => ({
+            place: w.place,
+            username: w.username,
+            userId: w.userId,
+            imageId: w.imageId,
+            imageUrl: w.imageUrl,
+            reason: w.reason,
+            judgeScore: w.judgeScore,
+            buzzAwarded: w.buzzAwarded,
+            pointsAwarded: w.pointsAwarded,
+            profilePicture: w.profilePicture
+        })),
+        endsAt: data.endsAt,
+        completionSummary: data.completionSummary,
+        themeElements: data.themeElements || [],
+        theme: data.theme || null
+    };
+}
+
+async function fetchCooldownData() {
+    const url = 'https://www.ouinche.com/dailychallenge/challenges.json';
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    const cooldowns = json.cooldowns || [];
+    // We only care about usernames to highlight them
+    return cooldowns.map(c => c.username);
 }
 
 async function extractReactData(tabId, imageId) {
