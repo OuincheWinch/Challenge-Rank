@@ -68,7 +68,8 @@ function loadCacheForChallenge(challengeId) {
             return false;
         }
         for (const [id, item] of Object.entries(data.items)) {
-            if (!judgeDataMap.has(id)) judgeDataMap.set(id, item);
+            const existing = judgeDataMap.get(id) || {};
+            judgeDataMap.set(id, { ...existing, ...item, username: item.username ?? existing.username });
         }
         console.log(`CR: Loaded ${Object.keys(data.items).length} cached items for challenge #${challengeId}`);
         return true;
@@ -107,7 +108,8 @@ async function fetchJudgeData(challengeId) {
         if (bulkRes?.success) {
             const items = bulkRes.data || [];
             for (const item of items) {
-                if (!judgeDataMap.has(item.id)) judgeDataMap.set(item.id, item);
+                const existing = judgeDataMap.get(item.id) || {};
+                judgeDataMap.set(item.id, { ...existing, ...item, username: item.username ?? existing.username });
             }
             fetchDiagnostic += `Bulk: ${items.length} items\n`;
         } else {
@@ -163,7 +165,8 @@ async function fetchJudgeData(challengeId) {
 
 function refreshPopups() {
     getTop20().forEach(item => {
-        if (!item.judgeData) { const jd = judgeDataMap.get(item.id); if (jd) item.judgeData = jd; }
+        const jd = judgeDataMap.get(item.id);
+        if (jd) item.judgeData = jd;
         const popup = document.querySelector(`#cr-popup-${item.id}`);
         if (popup) fillPopupContent(popup, item);
     });
