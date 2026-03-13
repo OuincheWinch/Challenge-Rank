@@ -224,9 +224,39 @@ function findScoreOnCard(card) {
 function scanForNewCards() {
     const links = Array.from(document.querySelectorAll('a[href*="/images/"]'));
     let newFound = 0;
+    let updatedNames = 0;
+    
     for (const link of links) {
         const href = link.href;
-        if (!href.match(/\/images\/\d+/) || rankedItemsMap.has(href)) continue;
+        
+        // 1. Existing items: if we already have it, let's check if its name loaded asynchronously
+        if (rankedItemsMap.has(href)) {
+            const existingItem = rankedItemsMap.get(href);
+            if (!existingItem.judgeData || !existingItem.judgeData.username) {
+                let card = null, el = link;
+                for (let d = 0; d < 8 && el; d++) { el = el.parentElement; if (!el || el.tagName === 'BODY') break; if (el.querySelector('img') && el.querySelector('svg')) { card = el; break; } }
+                if (card) {
+                    const userLink = card.querySelector('a[href^="/user/"]');
+                    if (userLink) {
+                        const match = userLink.getAttribute('href').match(/user\/([^\/\?]+)/);
+                        if (match) {
+                            const fallbackUsername = match[1];
+                            if (!existingItem.judgeData) existingItem.judgeData = { id: existingItem.id };
+                            existingItem.judgeData.username = fallbackUsername;
+                            
+                            const jd = judgeDataMap.get(existingItem.id) || { id: existingItem.id };
+                            jd.username = fallbackUsername;
+                            judgeDataMap.set(existingItem.id, jd);
+                            updatedNames++;
+                        }
+                    }
+                }
+            }
+            continue;
+        }
+
+        // 2. New items
+        if (!href.match(/\/images\/\d+/)) continue;
         let card = null, el = link;
         for (let d = 0; d < 8 && el; d++) { el = el.parentElement; if (!el || el.tagName === 'BODY') break; if (el.querySelector('img') && el.querySelector('svg')) { card = el; break; } }
         if (!card) continue;
@@ -234,12 +264,32 @@ function scanForNewCards() {
         if (score < 0) continue;
         const img = card.querySelector('img');
         if (!img?.src) continue;
+        
+        let fallbackUsername = null;
+        const userLink = card.querySelector('a[href^="/user/"]');
+        if (userLink) {
+            const match = userLink.getAttribute('href').match(/user\/([^\/\?]+)/);
+            if (match) fallbackUsername = match[1];
+        }
+
         const itemId = href.match(/\/images\/(\d+)/)[1];
-        rankedItemsMap.set(href, { score, imgSrc: img.src, href, id: itemId, judgeData: judgeDataMap.get(itemId) || null });
+        let jd = judgeDataMap.get(itemId);
+        if (!jd) {
+            jd = { id: itemId };
+            if (fallbackUsername) jd.username = fallbackUsername;
+            judgeDataMap.set(itemId, jd);
+        } else if (!jd.username && fallbackUsername) {
+            jd.username = fallbackUsername;
+        }
+
+        rankedItemsMap.set(href, { score, imgSrc: img.src, href, id: itemId, judgeData: jd });
         newFound++;
     }
+    
     if (newFound > 0) console.log(`CR: ${newFound} new. Total: ${rankedItemsMap.size}`);
-    return newFound > 0;
+    if (updatedNames > 0) console.log(`CR: Found ${updatedNames} delayed usernames.`);
+    
+    return newFound > 0 || updatedNames > 0;
 }
 
 let maxRankedItems = 20;
