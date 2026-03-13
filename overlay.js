@@ -287,6 +287,7 @@ function updateOverlayContent() {
         // Author name bar
         const authorBar = document.createElement('div');
         authorBar.className = 'cr-card-author';
+        authorBar.id = `cr-author-${item.id}`;
         const uName = item.judgeData?.username;
         authorBar.textContent = uName || '…';
         if (uName && challengeMetadata?.status !== 'Completed' && cooldownUsernames.has(uName)) {
