@@ -2,22 +2,29 @@
   <img src="Flying_button.png" alt="Challenge Rank icon" width="64">
 </p>
 
-<h1 align="center">Challenge Rank Extension (Firefox Version)</h1>
+<h1 align="center">Challenge Rank V2.1 — Firefox</h1>
 
 <p align="center">
   <strong>See who's actually winning.</strong><br>
-  A# Challenge Rank Extension (Firefox Version)
-
-This is the Firefox port of the Challenge Rank extension. Sort Civitai challenge images by rank/score with judge details popup.
+  A Firefox extension that ranks Civitai challenge images by judge score — instantly.
 </p>
 
 <p align="center">
-  <a href="https://github.com/OuincheWinch/Challenge-Rank/releases/latest">⬇️ Download v2.0.0</a>
+  <a href="https://github.com/OuincheWinch/Challenge-Rank/releases/latest">⬇️ Download v2.1.0</a>
 </p>
 
 ---
 
-## 🚀 What's New in V2.0
+## 🚀 What's New in V2.1
+
+*   **Multi-Domain Support**: Now works on `civitai.com`, `civitai.green`, and `civitai.red` — the extension activates and functions on all Civitai domain variants.
+*   **Live Stats Indicators**: Three new pill-shaped indicators in the overlay header:
+    *   🔟 **Perfect 10s Counter** — Tracks how many images in the challenge scored a perfect 10/10.
+    *   👤 **Your Rated Images** — Shows how many of your images have been judge-rated, with their scores listed inline.
+    *   🔴/✅ **Cooldown Status** — Visual red/green indicator showing your current cooldown state with days remaining if active.
+*   **Logged-In User Detection**: Automatically detects your Civitai username (via session API with DOM fallback) to power the personal stats and cooldown indicators.
+
+## 🆕 V2.0 Features
 
 *   **Cooldown Highlighting**: Connects with <a href="https://www.ouinche.com/dailychallenge"> www.ouinche.com/dailychallenge </a>  to fetch the challenge cooldown list. Authors under a cooldown penalty are highlighted in bold **<span style="color:#ff6b6b">red</span>**, making it easy to identify them on the leaderboard for active challenges.
 *   **Theme Scoring Hints**: Gain insights on how to rank higher! The overlay dynamically extracts and displays the precise **Categorical & Theme Elements** the judges evaluate your images against. Look for the "Scoring Hints" at the top of the leaderboard.
@@ -36,13 +43,15 @@ This is the Firefox port of the Challenge Rank extension. Sort Civitai challenge
 | 💾 | **Browser Cache** | Remembers ranked images as you infinite-scroll and caches judge API data securely |
 | 🔄 | **Auto-Reset** | Clears the list when you navigate to a different challenge |
 | 🖱️ | **Draggable Button**| The floating 🏆 button can be moved anywhere on your screen setup |
+| 🌐 | **Multi-Domain** | Works on civitai.com, civitai.green, and civitai.red |
+| 📊 | **Personal Stats** | See your rated images count, scores, and cooldown status at a glance |
 
-## 📦 Install
+## 📦 Install (Firefox)
 
 1. **Download** the latest [release zip](https://github.com/OuincheWinch/Challenge-Rank/releases/latest)
 2. **Unzip** the folder
-3. Open `chrome://extensions/` → enable **Developer mode**
-4. Click **Load unpacked** → select the `challenge-rank-extension` folder
+3. Open `about:debugging#/runtime/this-firefox`
+4. Click **Load Temporary Add-on** → select `manifest.json` from the unzipped folder
 
 ## 🎮 Usage
 
@@ -54,13 +63,13 @@ This is the Firefox port of the Challenge Rank extension. Sort Civitai challenge
 ## 📂 Extension Files
 
 ```
-manifest.json    → Extension config (v2.0.0)
-scanner.js       → Shared state, score detection, card scanning, caching mechanism
-overlay.js       → Main overlay UI: header, hints, podium, grid, top cards
-controls.js      → Floating button, filter automation, lifecycle, throttled observer
+manifest.json    → Extension config (v2.1.0, Manifest V3 + Gecko)
+scanner.js       → Shared state, score detection, card scanning, stats helpers, caching
+overlay.js       → Main overlay UI: header, stats indicators, hints, podium, grid, top cards
+controls.js      → Floating button, filter automation, user detection, lifecycle, observer
 popup.js         → CivBot details popup panel logic
-content.css      → Styles for overlay, badges, animations, cooldown alerts
-background.js    → Service worker for Civitai API calls & cross-origin cooldown fetches
+content.css      → Styles for overlay, badges, stats pills, cooldown alerts, animations
+background.js    → Service worker for Civitai API calls, user session & cooldown fetches
 ```
 
 ---

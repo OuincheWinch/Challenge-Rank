@@ -23,6 +23,30 @@ function createOverlay() {
     progress.textContent = '(Scanned: 0)';
     header.appendChild(progress);
 
+    // Stats indicators
+    const statsBar = document.createElement('div');
+    statsBar.className = 'cr-header-stats';
+    statsBar.id = 'cr-header-stats';
+    const tensStat = document.createElement('div');
+    tensStat.className = 'cr-stat cr-stat-tens';
+    tensStat.id = 'cr-stat-tens';
+    tensStat.innerHTML = '🔟 <span>0</span> perfect';
+    tensStat.title = '0 images scored 10/10';
+    statsBar.appendChild(tensStat);
+    const userStat = document.createElement('div');
+    userStat.className = 'cr-stat cr-stat-user';
+    userStat.id = 'cr-stat-user';
+    userStat.innerHTML = '👤 <span>—</span>';
+    userStat.title = 'Your rated images';
+    statsBar.appendChild(userStat);
+    const cdStat = document.createElement('div');
+    cdStat.className = 'cr-stat cr-stat-cd';
+    cdStat.id = 'cr-stat-cd';
+    cdStat.innerHTML = '⏳ <span>—</span>';
+    cdStat.title = 'Cooldown status';
+    statsBar.appendChild(cdStat);
+    header.appendChild(statsBar);
+
     // Controls container
     const controls = document.createElement('div');
     controls.className = 'cr-header-controls';
@@ -90,13 +114,80 @@ function buildImageUrl(imageUuid) {
 function updateOverlayHeader() {
     const title = document.getElementById('cr-header-title');
     if (!title) return;
-    if (challengeMetadata?.status === 'Completed') {
+    const status = challengeMetadata?.status;
+    if (status === 'Completed') {
         title.innerHTML = '<span class="cr-status-badge cr-status-finished">🏁 Finished</span> Top Ranked';
-    } else {
+    } else if (status === 'Active' || status === 'In Progress') {
         title.innerHTML = '<span class="cr-status-badge cr-status-live">🟢 LIVE</span> Top Ranked';
+    } else if (status === 'Upcoming' || status === 'Pending' || status === 'Scheduled') {
+        title.innerHTML = '<span class="cr-status-badge cr-status-upcoming">📅 Upcoming</span> Top Ranked';
+    } else if (status) {
+        title.innerHTML = `<span class="cr-status-badge cr-status-other">⏳ ${status}</span> Top Ranked`;
+    } else {
+        title.innerHTML = 'Top Ranked';
     }
     const progress = document.getElementById('cr-scan-progress');
     if (progress) progress.textContent = `(Scanned: ${rankedItemsMap.size})`;
+
+    // Update stats indicators
+    const tensEl = document.getElementById('cr-stat-tens');
+    if (tensEl) {
+        const count = countPerfectTens();
+        tensEl.innerHTML = `🔟 <span>${count}</span> perfect`;
+        tensEl.title = `${count} image${count !== 1 ? 's' : ''} scored 10/10`;
+    }
+    const userEl = document.getElementById('cr-stat-user');
+    if (userEl) {
+        const stats = getUserStats();
+        if (stats) {
+            let html = `👤 <span>${stats.count}</span> rated`;
+            if (stats.scores.length > 0) {
+                const show = stats.scores.slice(0, 5);
+                html += ` · ${show.join(', ')}`;
+                if (stats.scores.length > 5) html += ` <span class="cr-stat-more">+${stats.scores.length - 5}</span>`;
+            }
+            userEl.innerHTML = html;
+            userEl.title = `${currentLoggedInUser}: ${stats.count} image${stats.count !== 1 ? 's' : ''} rated`;
+        } else {
+            userEl.innerHTML = '👤 <span>—</span>';
+            userEl.title = 'Login to see your stats';
+        }
+    }
+
+    // Update cooldown indicator
+    const cdEl = document.getElementById('cr-stat-cd');
+    if (cdEl) {
+        if (currentLoggedInUser && cooldownDataMap.size > 0) {
+            const cd = cooldownDataMap.get(currentLoggedInUser);
+            if (cd && cd.freeOn) {
+                const now = new Date();
+                const free = new Date(cd.freeOn + 'T00:00:00');
+                const diffMs = free - now;
+                if (diffMs > 0) {
+                    const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+                    cdEl.innerHTML = `🔴 <span>${days}d</span> cooldown`;
+                    cdEl.title = `On cooldown until ${cd.freeOn} (won "${cd.challengeTitle || '?'}")`;
+                    cdEl.className = 'cr-stat cr-stat-cd cr-stat-cd-active';
+                } else {
+                    cdEl.innerHTML = '✅ <span>Clear</span>';
+                    cdEl.title = 'No active cooldown';
+                    cdEl.className = 'cr-stat cr-stat-cd cr-stat-cd-clear';
+                }
+            } else {
+                cdEl.innerHTML = '✅ <span>Clear</span>';
+                cdEl.title = 'No active cooldown';
+                cdEl.className = 'cr-stat cr-stat-cd cr-stat-cd-clear';
+            }
+        } else if (currentLoggedInUser) {
+            cdEl.innerHTML = '✅ <span>Clear</span>';
+            cdEl.title = 'No active cooldown';
+            cdEl.className = 'cr-stat cr-stat-cd cr-stat-cd-clear';
+        } else {
+            cdEl.innerHTML = '⏳ <span>—</span>';
+            cdEl.title = 'Login to see cooldown status';
+            cdEl.className = 'cr-stat cr-stat-cd';
+        }
+    }
 }
 
 // ============================================================
@@ -124,7 +215,7 @@ function renderPodium() {
         const card = document.createElement('div');
         card.className = 'cr-podium-card';
         card.style.borderColor = placeColors[winner.place - 1] || '#373a40';
-        card.addEventListener('click', () => window.open(`https://civitai.com/images/${winner.imageId}`, '_blank'));
+        card.addEventListener('click', () => window.open(`${window.location.origin}/images/${winner.imageId}`, '_blank'));
         // Medal badge
         const medal = document.createElement('div');
         medal.className = 'cr-podium-place';
@@ -303,7 +394,10 @@ function updateOverlayContent() {
         grid.appendChild(card);
     });
 
+    // Multiple refresh waves to catch async-loaded names
+    setTimeout(() => { if (isOverlayOpen) refreshPopups(); }, 1500);
     setTimeout(() => { if (isOverlayOpen) refreshPopups(); }, 4000);
+    setTimeout(() => { if (isOverlayOpen) refreshPopups(); }, 10000);
 }
 
 // ============================================================

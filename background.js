@@ -19,6 +19,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             .catch(err => sendResponse({ success: false, error: err.message }));
         return true;
     }
+    if (request.action === 'fetchCurrentUser') {
+        fetchCurrentUser(request.origin || 'https://civitai.com')
+            .then(data => sendResponse({ success: true, data }))
+            .catch(err => sendResponse({ success: false, error: err.message }));
+        return true;
+    }
     if (request.action === 'extractReactData') {
         extractReactData(sender.tab.id, request.imageId)
             .then(data => sendResponse({ success: true, data }))
@@ -83,8 +89,19 @@ async function fetchCooldownData() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const json = await res.json();
     const cooldowns = json.cooldowns || [];
-    // We only care about usernames to highlight them
-    return cooldowns.map(c => c.username);
+    return cooldowns.map(c => ({
+        username: c.username,
+        freeOn: c.freeOn || null,
+        challengeTitle: c.challengeTitle || null
+    }));
+}
+
+async function fetchCurrentUser(origin) {
+    const url = `${origin}/api/auth/session`;
+    const res = await fetch(url, { credentials: 'include' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    return { username: json?.user?.username || json?.user?.name || null };
 }
 
 async function extractReactData(tabId, imageId) {
