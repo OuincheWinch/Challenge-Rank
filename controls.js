@@ -77,11 +77,31 @@ function checkChallengeChange() {
             // Fetch cooldowns
             chrome.runtime.sendMessage({ action: 'fetchCooldownData' }).then(res => {
                 if (res?.success && res.data) {
-                    cooldownUsernames = new Set(res.data);
+                    cooldownUsernames = new Set(res.data.map(c => c.username));
+                    cooldownDataMap.clear();
+                    for (const c of res.data) {
+                        cooldownDataMap.set(c.username, { freeOn: c.freeOn, challengeTitle: c.challengeTitle });
+                    }
                     if (isOverlayOpen) updateOverlayContent();
                 }
             }).catch(e => {
                 console.log('CR: cooldown fetch error:', e);
+            });
+        }
+        // Detect logged-in user
+        if (!currentLoggedInUser) {
+            chrome.runtime.sendMessage({ action: 'fetchCurrentUser', origin: window.location.origin }).then(res => {
+                if (res?.success && res.data?.username) {
+                    currentLoggedInUser = res.data.username;
+                    console.log(`CR: Logged in as ${currentLoggedInUser}`);
+                } else {
+                    const domUser = detectUserFromDOM();
+                    if (domUser) { currentLoggedInUser = domUser; console.log(`CR: Detected user from DOM: ${currentLoggedInUser}`); }
+                }
+                if (currentLoggedInUser && isOverlayOpen) updateOverlayContent();
+            }).catch(() => {
+                const domUser = detectUserFromDOM();
+                if (domUser) { currentLoggedInUser = domUser; if (isOverlayOpen) updateOverlayContent(); }
             });
         }
         if (!hasAutoActivatedJudge) { hasAutoActivatedJudge = true; setTimeout(() => toggleJudgeReviewedFilter(true), 1000); }

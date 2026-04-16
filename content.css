@@ -93,6 +93,75 @@
     font-style: italic;
 }
 
+/* Header Stats Indicators */
+.cr-header-stats {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: 16px;
+}
+
+.cr-stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #c1c2c5;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #373a40;
+    white-space: nowrap;
+    transition: border-color 0.2s;
+}
+
+.cr-stat:hover {
+    border-color: #4dabf7;
+}
+
+.cr-stat span {
+    font-weight: bold;
+    color: #fff;
+}
+
+.cr-stat-tens span {
+    color: #ffd43b;
+}
+
+.cr-stat-user span {
+    color: #4dabf7;
+}
+
+.cr-stat-more {
+    color: #5c5f66 !important;
+    font-weight: normal !important;
+    font-size: 11px;
+}
+
+.cr-stat-cd-active {
+    border-color: #e03131 !important;
+    background: rgba(224, 49, 49, 0.1) !important;
+    animation: cr-pulse-cd 2s ease-in-out infinite;
+}
+
+.cr-stat-cd-active span {
+    color: #ff6b6b !important;
+}
+
+.cr-stat-cd-clear {
+    border-color: #2f9e44 !important;
+    background: rgba(47, 158, 68, 0.08) !important;
+}
+
+.cr-stat-cd-clear span {
+    color: #51cf66 !important;
+}
+
+@keyframes cr-pulse-cd {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.65; }
+}
+
 /* Status badges */
 .cr-status-badge {
     display: inline-block;
@@ -127,6 +196,18 @@
     background: rgba(173, 181, 189, 0.15);
     color: #adb5bd;
     border: 1px solid rgba(173, 181, 189, 0.3);
+}
+
+.cr-status-upcoming {
+    background: rgba(255, 212, 59, 0.15);
+    color: #ffd43b;
+    border: 1px solid rgba(255, 212, 59, 0.3);
+}
+
+.cr-status-other {
+    background: rgba(173, 181, 189, 0.1);
+    color: #909296;
+    border: 1px solid rgba(173, 181, 189, 0.2);
 }
 
 /* ============================================================

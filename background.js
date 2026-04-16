@@ -25,25 +25,40 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             .catch(err => sendResponse({ success: false, error: err.message }));
         return true;
     }
+    if (request.action === 'fetchCurrentUser') {
+        fetchCurrentUser(request.origin)
+            .then(data => sendResponse({ success: true, data }))
+            .catch(err => sendResponse({ success: false, error: err.message }));
+        return true;
+    }
 });
 
 async function fetchJudgeData(challengeId) {
     const allItems = [];
-    let cursor = undefined;
-    for (let page = 0; page < 10; page++) {
-        const input = { json: { challengeId: parseInt(challengeId), period: "AllTime", sort: "Newest", limit: 100, browsingLevel: 31 } };
-        if (cursor) input.json.cursor = cursor;
-        const url = `https://civitai.com/api/trpc/image.getInfinite?input=${encodeURIComponent(JSON.stringify(input))}`;
-        const res = await fetch(url, { credentials: 'include' });
-        if (!res.ok) break;
-        const json = await res.json();
-        const result = json?.result?.data?.json;
-        if (!result?.items) break;
-        for (const item of result.items) {
-            allItems.push({ id: String(item.id), judgeScore: item.judgeScore || null, reason: item.reason || null, username: item.user?.username || null, stats: item.stats || null });
+    const seenIds = new Set();
+
+    // Fetch with multiple sort orders to maximize coverage of top-scored images
+    for (const sortMode of ['Newest', 'Most Reactions']) {
+        let cursor = undefined;
+        for (let page = 0; page < 10; page++) {
+            const input = { json: { challengeId: parseInt(challengeId), period: "AllTime", sort: sortMode, limit: 100, browsingLevel: 31 } };
+            if (cursor) input.json.cursor = cursor;
+            const url = `https://civitai.com/api/trpc/image.getInfinite?input=${encodeURIComponent(JSON.stringify(input))}`;
+            const res = await fetch(url, { credentials: 'include' });
+            if (!res.ok) break;
+            const json = await res.json();
+            const result = json?.result?.data?.json;
+            if (!result?.items) break;
+            for (const item of result.items) {
+                const id = String(item.id);
+                if (!seenIds.has(id)) {
+                    seenIds.add(id);
+                    allItems.push({ id, judgeScore: item.judgeScore || null, reason: item.reason || null, username: item.user?.username || null, stats: item.stats || null });
+                }
+            }
+            cursor = result.nextCursor;
+            if (!cursor || result.items.length < 100) break;
         }
-        cursor = result.nextCursor;
-        if (!cursor || result.items.length < 100) break;
     }
     return allItems;
 }
@@ -83,8 +98,19 @@ async function fetchCooldownData() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const json = await res.json();
     const cooldowns = json.cooldowns || [];
-    // We only care about usernames to highlight them
-    return cooldowns.map(c => c.username);
+    return cooldowns.map(c => ({
+        username: c.username,
+        freeOn: c.freeOn || null,
+        challengeTitle: c.challengeTitle || null
+    }));
+}
+
+async function fetchCurrentUser(origin) {
+    const url = `${origin || 'https://civitai.com'}/api/auth/session`;
+    const res = await fetch(url, { credentials: 'include' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    return { username: json?.user?.username || null };
 }
 
 async function extractReactData(tabId, imageId) {

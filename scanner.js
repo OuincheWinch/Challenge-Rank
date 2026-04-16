@@ -13,11 +13,13 @@ let currentChallengeId = null;
 let hasAutoActivatedJudge = false;
 let challengeMetadata = null; // { status, winners[], endsAt, completionSummary, themeElements, theme }
 let cooldownUsernames = new Set();
+let cooldownDataMap = new Map(); // username -> { freeOn, challengeTitle }
 
 const rankedItemsMap = new Map();
 const judgeDataMap = new Map();
 let fetchStatus = 'idle';
 let fetchDiagnostic = '';
+let currentLoggedInUser = null;
 
 // ============================================================
 // TOAST NOTIFICATION SYSTEM
@@ -169,7 +171,21 @@ function refreshPopups() {
         if (jd) item.judgeData = jd;
         const popup = document.querySelector(`#cr-popup-${item.id}`);
         if (popup) fillPopupContent(popup, item);
+        // Also refresh author name bar
+        const authorBar = document.querySelector(`#cr-author-${item.id}`);
+        if (authorBar) {
+            const uName = item.judgeData?.username;
+            if (uName) {
+                authorBar.textContent = uName;
+                if (challengeMetadata?.status !== 'Completed' && cooldownUsernames.has(uName)) {
+                    authorBar.classList.add('cr-card-author-cooldown');
+                } else {
+                    authorBar.classList.remove('cr-card-author-cooldown');
+                }
+            }
+        }
     });
+    updateOverlayHeader();
 }
 
 // ============================================================
@@ -312,4 +328,58 @@ function getRankedTop20() {
         else { item.rank = rank; }
     });
     return sorted;
+}
+
+// ============================================================
+// STATS HELPERS
+// ============================================================
+
+function countPerfectTens() {
+    const tens = new Set();
+    for (const [id, jd] of judgeDataMap.entries()) {
+        if (jd.judgeScore) {
+            const js = jd.judgeScore;
+            const w = (js.theme || 0) * 0.5 + (js.wittiness || 0) * 0.15 + (js.humor || 0) * 0.15 + (js.aesthetic || 0) * 0.2;
+            if (parseFloat(w.toFixed(1)) >= 10) tens.add(id);
+        }
+    }
+    for (const item of rankedItemsMap.values()) {
+        if (item.score >= 10) tens.add(item.id);
+    }
+    return tens.size;
+}
+
+function getUserStats() {
+    if (!currentLoggedInUser) return null;
+    const userScores = [];
+    const seen = new Set();
+    const lowerUser = currentLoggedInUser.toLowerCase();
+    for (const [id, jd] of judgeDataMap.entries()) {
+        if (jd.username && jd.username.toLowerCase() === lowerUser && jd.judgeScore) {
+            seen.add(id);
+            const js = jd.judgeScore;
+            userScores.push(parseFloat(((js.theme || 0) * 0.5 + (js.wittiness || 0) * 0.15 + (js.humor || 0) * 0.15 + (js.aesthetic || 0) * 0.2).toFixed(1)));
+        }
+    }
+    for (const item of rankedItemsMap.values()) {
+        if (!seen.has(item.id)) {
+            const username = item.judgeData?.username;
+            if (username && username.toLowerCase() === lowerUser) {
+                userScores.push(item.score);
+            }
+        }
+    }
+    return { count: userScores.length, scores: userScores.sort((a, b) => b - a) };
+}
+
+function detectUserFromDOM() {
+    const header = document.querySelector('header');
+    if (header) {
+        const links = header.querySelectorAll('a[href*="/user/"]');
+        for (const link of links) {
+            const match = link.getAttribute('href').match(/\/user\/([^\/\?]+)/);
+            if (match) return decodeURIComponent(match[1]);
+        }
+    }
+    return null;
 }
